@@ -1,6 +1,21 @@
 <html> 
     <head>
-        <script src="sidebar.js"></script>
+        <style>
+            .loader {
+                border: 16px solid #f3f3f3;
+                border-top: 16px solid #3498db;
+                border-radius: 50%;
+                width: 36px;
+                height: 36px;
+                animation: spin 2s linear infinite;
+                visibility: hidden;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
     </head>
     <body>
         <h1>Talk to me!</h1>
@@ -8,13 +23,16 @@
         <span id="lastaction"></span>
         <br/>
         <br/>
-        <textarea id="content" rows="25" cols="45"></textarea>
+        <textarea id="content" rows="25" cols="45" style="display: none;"></textarea>
+        <button id="RetrieveAudio">Generate audio</button>
         <br/>
         <br/>
-        <button id="RetrieveAudio">Listen!</button>
-
-        <audio controls id="audio"></audio>
+        <div class="loader" id="loader"></div>
+        <br/>
+        <br/>
+        <audio controls id="audio" style="visibility:hidden"></audio>
             <source src="your-audio-file.mp3" type="audio/mpeg">
         </audio>
+        <script src="sidebar.js"></script>
     </body>
 </html>

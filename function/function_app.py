@@ -4,6 +4,7 @@ import mimetypes
 import os
 from dotenv import load_dotenv
 from openai import AzureOpenAI
+import requests
 import azure.cognitiveservices.speech as speechsdk
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
@@ -62,21 +63,39 @@ def GenerateConversation(req: func.HttpRequest) -> func.HttpResponse:
     )
     
     ssml = completion.choices[0].message.content
-    
-    logging.info('Transforming ssml into speech')
 
-    service_region = "eastus"
-    speech_key = os.getenv("SPEECH_API_KEY")
-    speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
-    speech_config.set_speech_synthesis_output_format(speechsdk.SpeechSynthesisOutputFormat.Audio24Khz96KBitRateMonoMp3)  
+    logging.info('Getting an authorization token for use with cognitive services.')
 
-    filename = "conversation.mp3"
-    file_config = speechsdk.audio.AudioOutputConfig(filename=filename)
-    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=file_config)  
-    result = speech_synthesizer.speak_ssml_async(ssml).get()
-    
-    logging.info('Done with conversation function.')
-    
-    with open(filename, 'rb') as f:
-        mimetype = mimetypes.guess_type(filename)
-        return func.HttpResponse(f.read(), mimetype=mimetype[0])
+    token_url = "https://eastus.api.cognitive.microsoft.com/sts/v1.0/issueToken"
+    headers = {
+        "Ocp-Apim-Subscription-Key": os.getenv("SPEECH_API_KEY"),
+        "Host": "eastus.api.cognitive.microsoft.com",
+        "Content-type": "application/x-www-form-urlencoded",
+        "Content-Length": "0"
+    }
+
+    response = requests.post(token_url, headers=headers)
+
+    logging.info(f"Status code: {response.status_code}")
+
+    access_token = response.text
+
+    logging.info('Generate audio')
+
+    # Generate the audio file using the SSML content
+    tts_url = "https://eastus.tts.speech.microsoft.com/cognitiveservices/v1"
+    headers = {
+        "X-Microsoft-OutputFormat": "audio-24khz-96kbitrate-mono-mp3",
+        "Content-Type": "application/ssml+xml",
+        "Content-Length": str(len(ssml)),
+        "Host": "eastusa.tts.speech.microsoft.com",
+        "Authorization": "Bearer " + access_token,
+        "User-Agent": "talktome"
+    }
+
+    # Generate the audio file using the SSML content
+    response = requests.post(tts_url, headers=headers, data=ssml, stream=False)
+
+    logging.info(f"Status code: {response.status_code}")
+
+    return func.HttpResponse(response.content, mimetype="audio/mpeg")

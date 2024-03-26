@@ -27,15 +27,29 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
 
 window.onload=function() {
     document.getElementById("RetrieveAudio").addEventListener("click", function() { 
+        document.getElementById("loader").style.visibility = "visible";
+        document.getElementById("audio").style.visibility = "hidden";
         document.getElementById("lastaction").innerText = "Retrieving audio";
 
-        fetch("http://localhost:7071/api/retrieve_conversation?url=" + currentTab.url)
+        fetch("https://talktomefunction.azurewebsites.net/api/GenerateConversation?code=<<replace with your function key>>", 
+            { 
+                method: "POST", 
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "audio/mpeg"
+                },
+                body: JSON.stringify({ "content": document.getElementById("content").value })
+            })
           .then(response => response.blob())
           .then(blob => {
             document.getElementById("audio").src = URL.createObjectURL(blob);
+
+            document.getElementById("loader").style.visibility = "hidden";
+            document.getElementById("audio").style.visibility = "visible";
           })
           .catch(err =>  {
             document.getElementById("lastaction").innerText = err;
+            document.getElementById("loader").style.visibility = "hidden";
           });
     })
 };

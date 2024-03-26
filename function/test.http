@@ -1,5 +1,6 @@
 ### Local function development testing
 
+
 POST http://localhost:7071/api/GenerateConversation
 Content-Type: application/json
 Accept: audio/mpeg
@@ -8,6 +9,31 @@ Accept: audio/mpeg
 
 ###
 
-GET http://localhost:7071/api/GenerateConversation?content=Audio Pods offer the best built-in audio experience I've ever had in an Apple product. While I work from Apple Vision Pro, my HomePods sit useless on the wall despite having better audio capabilities — of course, they still get their use when I'm not strapped into Apple's version of the Matrix.
+POST https://talktomefunction.azurewebsites.net/api/GenerateConversation?code=<<replace with your function key>>
 Content-Type: application/json
 Accept: audio/mpeg
+
+{"content":"content"}
+
+###
+
+POST https://eastus.api.cognitive.microsoft.com/sts/v1.0/issueToken HTTP/1.1
+Ocp-Apim-Subscription-Key: <<speech key>>
+Host: eastus.api.cognitive.microsoft.com
+Content-type: application/x-www-form-urlencoded
+Content-Length: 0
+
+###
+
+POST https://eastus.tts.speech.microsoft.com/cognitiveservices/v1 HTTP/1.1
+X-Microsoft-OutputFormat: audio-24khz-96kbitrate-mono-mp3
+Content-Type: application/ssml+xml
+Content-Length: 199
+Host: eastusa.tts.speech.microsoft.com
+Authorization: Bearer <<bearer token>>
+User-Agent: talktome
+
+<speak version='1.0' xml:lang='en-US'><voice xml:lang='en-US' xml:gender='Male'
+    name='en-US-ChristopherNeural'>
+        I'm excited to try text to speech!
+</voice></speak>

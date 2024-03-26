@@ -3,8 +3,14 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
+bs4
+markdownify
 requests
 azure.cognitiveservices.speech
 AzureOpenAI
 python-dotenv
 openai
+pydub
+pypandoc
+flask
+fastapi
