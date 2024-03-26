@@ -1,0 +1,13 @@
+### Local function development testing
+
+POST http://localhost:7071/api/GenerateConversation
+Content-Type: application/json
+Accept: audio/mpeg
+
+{"content":"content"}
+
+###
+
+GET http://localhost:7071/api/GenerateConversation?content=Audio Pods offer the best built-in audio experience I've ever had in an Apple product. While I work from Apple Vision Pro, my HomePods sit useless on the wall despite having better audio capabilities — of course, they still get their use when I'm not strapped into Apple's version of the Matrix.
+Content-Type: application/json
+Accept: audio/mpeg
